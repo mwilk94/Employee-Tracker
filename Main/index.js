@@ -185,3 +185,69 @@ const viewAllDepartments = () => {
     promptUser();
   });
 };
+
+// View all Employees by Department
+const viewEmployeesByDepartment = () => {
+  const sql = `SELECT employee.first_name, 
+                  employee.last_name, 
+                  department.department_name AS department
+                  FROM employee 
+                  LEFT JOIN role ON employee.role_id = role.id 
+                  LEFT JOIN department ON role.department_id = department.id`;
+  connection.query(sql, (error, response) => {
+    if (error) throw error;
+    console.log(
+      chalk.yellow.bold(
+        `====================================================================================`
+      )
+    );
+    console.log(
+      `                              ` +
+        chalk.green.bold(`Employees by Department:`)
+    );
+    console.log(
+      chalk.yellow.bold(
+        `====================================================================================`
+      )
+    );
+    console.table(response);
+    console.log(
+      chalk.yellow.bold(
+        `====================================================================================`
+      )
+    );
+    promptUser();
+  });
+};
+
+//View all Departments by Budget
+const viewDepartmentBudget = () => {
+  console.log(
+    chalk.yellow.bold(
+      `====================================================================================`
+    )
+  );
+  console.log(
+    `                              ` + chalk.green.bold(`Budget By Department:`)
+  );
+  console.log(
+    chalk.yellow.bold(
+      `====================================================================================`
+    )
+  );
+  const sql = `SELECT department_id AS id, 
+                  department.department_name AS department,
+                  SUM(salary) AS budget
+                  FROM  role  
+                  INNER JOIN department ON role.department_id = department.id GROUP BY  role.department_id`;
+  connection.query(sql, (error, response) => {
+    if (error) throw error;
+    console.table(response);
+    console.log(
+      chalk.yellow.bold(
+        `====================================================================================`
+      )
+    );
+    promptUser();
+  });
+};
