@@ -509,3 +509,81 @@ const updateEmployeeRole = () => {
     });
   });
 };
+
+// Update an Employee's Manager
+const updateEmployeeManager = () => {
+  let sql = `SELECT employee.id, employee.first_name, employee.last_name, employee.manager_id
+                  FROM employee`;
+  connection.promise().query(sql, (error, response) => {
+    let employeeNamesArray = [];
+    response.forEach((employee) => {
+      employeeNamesArray.push(`${employee.first_name} ${employee.last_name}`);
+    });
+
+    inquirer
+      .prompt([
+        {
+          name: "chosenEmployee",
+          type: "list",
+          message: "Which employee has a new manager?",
+          choices: employeeNamesArray,
+        },
+        {
+          name: "newManager",
+          type: "list",
+          message: "Who is their manager?",
+          choices: employeeNamesArray,
+        },
+      ])
+      .then((answer) => {
+        let employeeId, managerId;
+        response.forEach((employee) => {
+          if (
+            answer.chosenEmployee ===
+            `${employee.first_name} ${employee.last_name}`
+          ) {
+            employeeId = employee.id;
+          }
+
+          if (
+            answer.newManager === `${employee.first_name} ${employee.last_name}`
+          ) {
+            managerId = employee.id;
+          }
+        });
+
+        if (validate.isSame(answer.chosenEmployee, answer.newManager)) {
+          console.log(
+            chalk.redBright.bold(
+              `====================================================================================`
+            )
+          );
+          console.log(chalk.redBright(`Invalid Manager Selection`));
+          console.log(
+            chalk.redBright.bold(
+              `====================================================================================`
+            )
+          );
+          promptUser();
+        } else {
+          let sql = `UPDATE employee SET employee.manager_id = ? WHERE employee.id = ?`;
+
+          connection.query(sql, [managerId, employeeId], (error) => {
+            if (error) throw error;
+            console.log(
+              chalk.greenBright.bold(
+                `====================================================================================`
+              )
+            );
+            console.log(chalk.greenBright(`Employee Manager Updated`));
+            console.log(
+              chalk.greenBright.bold(
+                `====================================================================================`
+              )
+            );
+            promptUser();
+          });
+        }
+      });
+  });
+};
