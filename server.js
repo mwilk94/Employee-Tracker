@@ -1,7 +1,18 @@
-const inquirer = require("inquirer");
-const db = require("./config/connections.js");
-const cTable = require("console.table");
+// const connection = import("./config/connection.js");
+// const inquirer = import("inquirer");
+// const cTable = import("console.table");
+// const chalk = import("chalk");
+// const figlet = import("figlet");
+// const validate = import("./js/validate.js");
 
+import connection from "./config/connection.js";
+import inquirer from "inquirer";
+// import cTable from "cTable";
+import chalk from "chalk";
+// import figlet from "figlet";
+import validate from "./js/validate.js";
+
+// Prompt User for Choices
 const promptUser = () => {
   inquirer
     .prompt([
@@ -88,6 +99,8 @@ const promptUser = () => {
     });
 };
 
+// ----------------------------------------------------- VIEW -----------------------------------------------------------------------
+
 // View All Employees
 const viewAllEmployees = () => {
   let sql = `SELECT employee.id, 
@@ -100,7 +113,7 @@ const viewAllEmployees = () => {
                   WHERE department.id = role.department_id 
                   AND role.id = employee.role_id
                   ORDER BY employee.id ASC`;
-  connection.promise().query(sql, (error, response) => {
+  connection.query(sql, (error, response) => {
     if (error) throw error;
     console.log(
       chalk.yellow.bold(
@@ -144,7 +157,7 @@ const viewAllRoles = () => {
   const sql = `SELECT role.id, role.title, department.department_name AS department
                   FROM role
                   INNER JOIN department ON role.department_id = department.id`;
-  connection.promise().query(sql, (error, response) => {
+  connection.query(sql, (error, response) => {
     if (error) throw error;
     response.forEach((role) => {
       console.log(role.title);
@@ -161,7 +174,7 @@ const viewAllRoles = () => {
 // View all Departments
 const viewAllDepartments = () => {
   const sql = `SELECT department.id AS id, department.department_name AS department FROM department`;
-  connection.promise().query(sql, (error, response) => {
+  connection.query(sql, (error, response) => {
     if (error) throw error;
     console.log(
       chalk.yellow.bold(
@@ -252,6 +265,8 @@ const viewDepartmentBudget = () => {
   });
 };
 
+// --------------------------------------------------- ADD --------------------------------------------------------------------
+
 // Add a New Employee
 const addEmployee = () => {
   inquirer
@@ -286,7 +301,7 @@ const addEmployee = () => {
     .then((answer) => {
       const crit = [answer.fistName, answer.lastName];
       const roleSql = `SELECT role.id, role.title FROM role`;
-      connection.promise().query(roleSql, (error, data) => {
+      connection.query(roleSql, (error, data) => {
         if (error) throw error;
         const roles = data.map(({ id, title }) => ({ name: title, value: id }));
         inquirer
@@ -302,7 +317,7 @@ const addEmployee = () => {
             const role = roleChoice.role;
             crit.push(role);
             const managerSql = `SELECT * FROM employee`;
-            connection.promise().query(managerSql, (error, data) => {
+            connection.query(managerSql, (error, data) => {
               if (error) throw error;
               const managers = data.map(({ id, first_name, last_name }) => ({
                 name: first_name + " " + last_name,
@@ -337,7 +352,7 @@ const addEmployee = () => {
 // Add a New Role
 const addRole = () => {
   const sql = "SELECT * FROM department";
-  connection.promise().query(sql, (error, response) => {
+  connection.query(sql, (error, response) => {
     if (error) throw error;
     let deptNamesArray = [];
     response.forEach((department) => {
@@ -390,7 +405,7 @@ const addRole = () => {
           let sql = `INSERT INTO role (title, salary, department_id) VALUES (?, ?, ?)`;
           let crit = [createdRole, answer.salary, departmentId];
 
-          connection.promise().query(sql, crit, (error) => {
+          connection.query(sql, crit, (error) => {
             if (error) throw error;
             console.log(
               chalk.yellow.bold(
@@ -437,11 +452,12 @@ const addDepartment = () => {
     });
 };
 
+// ------------------------------------------------- UPDATE -------------------------------------------------------------------------
+
 // Update an Employee's Role
 const updateEmployeeRole = () => {
-  let sql = `SELECT employee.id, employee.first_name, employee.last_name, role.id AS "role_id"
-                  FROM employee, role, department WHERE department.id = role.department_id AND role.id = employee.role_id`;
-  connection.promise().query(sql, (error, response) => {
+  let sql = `SELECT employee.id, employee.first_name, employee.last_name, role.id AS "role_id" FROM employee, role, department WHERE department.id = role.department_id AND role.id = employee.role_id`;
+  connection.query(sql, (error, response) => {
     if (error) throw error;
     let employeeNamesArray = [];
     response.forEach((employee) => {
@@ -449,7 +465,7 @@ const updateEmployeeRole = () => {
     });
 
     let sql = `SELECT role.id, role.title FROM role`;
-    connection.promise().query(sql, (error, response) => {
+    connection.query(sql, (error, response) => {
       if (error) throw error;
       let rolesArray = [];
       response.forEach((role) => {
@@ -513,8 +529,8 @@ const updateEmployeeRole = () => {
 // Update an Employee's Manager
 const updateEmployeeManager = () => {
   let sql = `SELECT employee.id, employee.first_name, employee.last_name, employee.manager_id
-                  FROM employee`;
-  connection.promise().query(sql, (error, response) => {
+                    FROM employee`;
+  connection.query(sql, (error, response) => {
     let employeeNamesArray = [];
     response.forEach((employee) => {
       employeeNamesArray.push(`${employee.first_name} ${employee.last_name}`);
@@ -588,11 +604,13 @@ const updateEmployeeManager = () => {
   });
 };
 
+// -------------------------------------- REMOVE --------------------------------------------------------
+
 // Delete an Employee
 const removeEmployee = () => {
   let sql = `SELECT employee.id, employee.first_name, employee.last_name FROM employee`;
 
-  connection.promise().query(sql, (error, response) => {
+  connection.query(sql, (error, response) => {
     if (error) throw error;
     let employeeNamesArray = [];
     response.forEach((employee) => {
@@ -630,7 +648,7 @@ const removeEmployee = () => {
           );
           console.log(chalk.redBright(`Employee Successfully Removed`));
           console.log(
-            chalk.RedBright.bold(
+            chalk.redBright.bold(
               `====================================================================================`
             )
           );
@@ -644,7 +662,7 @@ const removeEmployee = () => {
 const removeRole = () => {
   let sql = `SELECT role.id, role.title FROM role`;
 
-  connection.promise().query(sql, (error, response) => {
+  connection.query(sql, (error, response) => {
     if (error) throw error;
     let roleNamesArray = [];
     response.forEach((role) => {
@@ -670,7 +688,7 @@ const removeRole = () => {
         });
 
         let sql = `DELETE FROM role WHERE role.id = ?`;
-        connection.promise().query(sql, [roleId], (error) => {
+        connection.query(sql, [roleId], (error) => {
           if (error) throw error;
           console.log(
             chalk.redBright.bold(
@@ -692,7 +710,7 @@ const removeRole = () => {
 // Delete a Department
 const removeDepartment = () => {
   let sql = `SELECT department.id, department.department_name FROM department`;
-  connection.promise().query(sql, (error, response) => {
+  connection.query(sql, (error, response) => {
     if (error) throw error;
     let departmentNamesArray = [];
     response.forEach((department) => {
@@ -718,7 +736,7 @@ const removeDepartment = () => {
         });
 
         let sql = `DELETE FROM department WHERE department.id = ?`;
-        connection.promise().query(sql, [departmentId], (error) => {
+        connection.query(sql, [departmentId], (error) => {
           if (error) throw error;
           console.log(
             chalk.redBright.bold(
@@ -736,3 +754,4 @@ const removeDepartment = () => {
       });
   });
 };
+promptUser();

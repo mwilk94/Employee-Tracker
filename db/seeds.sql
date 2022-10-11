@@ -1,7 +1,4 @@
-use employees;
-
-INSERT INTO department
-    (name)
+INSERT INTO department(department_name)
 VALUES
     ('Engineering'),
     ('Sales'),
@@ -25,10 +22,10 @@ INSERT INTO employee
 VALUES
     ('Don', 'Lothario', 3, NULL),
     ('Bella', 'Goth', 1, 3),
-    ('Judith', 'Ward', 8, Null);
+    ('Judith', 'Ward', 8, Null),
     ('Bob', 'Pancakes', 2, 1),
     ('Summer', 'Holiday', 7, NULL),
     ('Agness', 'Crumplebottom', 4, NULL),
     ('Vladius', 'Straud', 6, 5),
-    ('Geoffrey', 'Landgraab', 5, 7),
+    ('Geoffrey', 'Landgraab', 5, 7);
     
