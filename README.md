@@ -10,6 +10,7 @@ AS A business owner, do you to be able to view and manage the departments, roles
 1. View of all departments, roles, employees
 2. Add departments, roles, employees
 3. Update an employee role
+4. Delete departments, roles, and employees. 
 
 
 ## Installation
@@ -17,8 +18,6 @@ AS A business owner, do you to be able to view and manage the departments, roles
 `npm init`
 `npm install inquirer`
 `npm install mysql2`
-`npm install console-table`
-`npm install figlet`
 `npm install chalk`
 `npm install nodemon`
 `npm install validator`

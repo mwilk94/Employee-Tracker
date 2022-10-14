@@ -1,15 +1,6 @@
-// const connection = import("./config/connection.js");
-// const inquirer = import("inquirer");
-// const cTable = import("console.table");
-// const chalk = import("chalk");
-// const figlet = import("figlet");
-// const validate = import("./js/validate.js");
-
 import connection from "./config/connection.js";
 import inquirer from "inquirer";
-// import cTable from "cTable";
 import chalk from "chalk";
-// import figlet from "figlet";
 import validate from "./js/validate.js";
 
 // Prompt User for Choices
